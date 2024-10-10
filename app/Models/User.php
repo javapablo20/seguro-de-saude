@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -17,9 +16,23 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
         'email',
-        'password',
+        'senha',
+    ];
+
+    public function getAuthIdentifierName()
+    {
+        return 'email'; // Retorna o identificador de autenticação
+    }
+
+    public function getAuthPassword()
+    {
+        return $this->senha;  // Referencia a coluna 'senha'
+    }
+
+    protected $hidden = [
+        'senha', // Altere para 'senha' para corresponder ao seu banco de dados
+        'remember_token', // Remova se não for usar a funcionalidade "lembrar de mim"
     ];
 
     /**
@@ -27,21 +40,17 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    public function cliente()
+    {
+        return $this->hasOne(Cliente::class, 'email', 'email'); // Relacionamento com Cliente
+    }
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 }
